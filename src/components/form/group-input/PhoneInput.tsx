@@ -10,6 +10,7 @@ interface PhoneInputProps {
   placeholder?: string;
   onChange?: (phoneNumber: string) => void;
   selectPosition?: "start" | "end"; // New prop for dropdown position
+  id?: string;
 }
 
 const PhoneInput: React.FC<PhoneInputProps> = ({
@@ -19,7 +20,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
   selectPosition = "start", // Default position is 'start'
 }) => {
   const [selectedCountry, setSelectedCountry] = useState<string>("US");
-  const [phoneNumber, setPhoneNumber] = useState<string>("+1");
+  const [phoneNumber, setPhoneNumber] = useState<string>("+225");
 
   const countryCodes: Record<string, string> = countries.reduce(
     (acc, { code, label }) => ({ ...acc, [code]: label }),

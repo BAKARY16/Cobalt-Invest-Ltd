@@ -17,16 +17,20 @@ export default function AuthLayout({
             {/* <!-- ===== Common Grid Shape Start ===== --> */}
             <GridShape />
             <div className="flex flex-col items-center max-w-xs">
-              <Link to="/" className="block mb-4">
+              <Link to="/" className="flex items-center justify-between mb-4">
                 <img
-                  width={231}
+                  width={48}
                   height={48}
-                  src="/images/logo/auth-logo.svg"
+                  src="/logo.png"
                   alt="Logo"
                 />
+                <h2 className="text-2xl font-semibold text-center text-white/90">
+                  Cobalt Invest Ltd
+                </h2>
               </Link>
-              <p className="text-center text-gray-400 dark:text-white/60">
-                Free and Open-Source Tailwind CSS Admin Dashboard Template
+              <p className="mb-6 text-center text-white/80">
+                Cette plateforme est le tableau de bord administratif pour la
+                gestion des activités de l'entreprise
               </p>
             </div>
           </div>

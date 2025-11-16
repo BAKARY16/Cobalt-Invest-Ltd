@@ -21,7 +21,9 @@ export default function RegistreFrom() {
                 title="Cobalt Invest Ltd - Admin Dashboard"
                 description="Cette plateforme est le tableau de bord administratif pour la gestion des activités de l'entreprise"
             />}
+
             <PageBreadcrumb pageTitle="Formulaire d'inscription" />
+
             <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
                 <div className="space-y-6">
                     <DefaultInputs />
@@ -32,7 +34,9 @@ export default function RegistreFrom() {
                     <InputGroup />
                     <SelectInput />
                 </div>
+                
             </div>
+
 
             {/* Outline Button with Start Icon */}
             <div className="mt-6 flex items-center gap-5 justify-center

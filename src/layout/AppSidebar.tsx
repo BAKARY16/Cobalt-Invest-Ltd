@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
+import { useNavigate } from "react-router-dom";
+import PageLoader from "../components/common/PageLoader"; // Import du loader
 
 // Assume these icons are imported from an icon library
 import {
@@ -28,15 +30,16 @@ type NavItem = {
 const navItems: NavItem[] = [
   {
     icon: <GridIcon />,
-    name: "Tableau de board",
+    name: "Tableau de bord",
     subItems: [{ name: "Aperçu des activités", path: "/", pro: false }],
   },
   {
-    name: "Forms",
+    name: "Gestion des apprenants",
     icon: <ListIcon />,
     subItems: [
-      { name: "Form Elements", path: "/form-elements", pro: false },
-      { name: "Formulaire d'inscription", path: "/inscription", pro: false},
+      { name: "Ajouter un apprenant", path: "/multi-step-form", pro: false },
+      { name: "Mise à jour des informations", path: "/update-info", pro: false },
+      { name: "Liste des inscrits", path: "/registered-list", pro: false },
     ],
   },
   {
@@ -54,7 +57,7 @@ const navItems: NavItem[] = [
   },
   {
     icon: <CalenderIcon />,
-    name: "Calendrier", // French for "Calendar"
+    name: "Calendrier",
     path: "/calendar",
   },
   {
@@ -98,6 +101,8 @@ const othersItems: NavItem[] = [
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const location = useLocation();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false); // État pour le loader
 
   const [openSubmenu, setOpenSubmenu] = useState<{
     type: "main" | "others";
@@ -108,7 +113,6 @@ const AppSidebar: React.FC = () => {
   );
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  // const isActive = (path: string) => location.pathname === path;
   const isActive = useCallback(
     (path: string) => location.pathname === path,
     [location.pathname]
@@ -163,6 +167,17 @@ const AppSidebar: React.FC = () => {
     });
   };
 
+  const handleNavigation = (path: string) => {
+    if (location.pathname !== path) {
+      setLoading(true); // Activer le loader
+      navigate(path); // Naviguer vers la page
+    }
+  };
+
+  useEffect(() => {
+    setLoading(false); // Désactiver le loader après le changement de route
+  }, [location]);
+
   const renderMenuItems = (items: NavItem[], menuType: "main" | "others") => (
     <ul className="flex flex-col gap-4">
       {items.map((nav, index) => (
@@ -205,8 +220,8 @@ const AppSidebar: React.FC = () => {
             </button>
           ) : (
             nav.path && (
-              <Link
-                to={nav.path}
+              <button
+                onClick={() => nav.path && handleNavigation(nav.path)} // Vérifier si nav.path est défini avant d'appeler handleNavigation
                 className={`menu-item group ${
                   isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
                 }`}
@@ -223,7 +238,7 @@ const AppSidebar: React.FC = () => {
                 {(isExpanded || isHovered || isMobileOpen) && (
                   <span className="menu-item-text">{nav.name}</span>
                 )}
-              </Link>
+              </button>
             )
           )}
           {nav.subItems && (isExpanded || isHovered || isMobileOpen) && (
@@ -242,8 +257,8 @@ const AppSidebar: React.FC = () => {
               <ul className="mt-2 space-y-1 ml-9">
                 {nav.subItems.map((subItem) => (
                   <li key={subItem.name}>
-                    <Link
-                      to={subItem.path}
+                    <button
+                      onClick={() => handleNavigation(subItem.path)} // Utiliser handleNavigation pour gérer le chargement
                       className={`menu-dropdown-item ${
                         isActive(subItem.path)
                           ? "menu-dropdown-item-active"
@@ -275,7 +290,7 @@ const AppSidebar: React.FC = () => {
                           </span>
                         )}
                       </span>
-                    </Link>
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -287,8 +302,10 @@ const AppSidebar: React.FC = () => {
   );
 
   return (
-    <aside
-      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
+    <>
+      {loading && <PageLoader />} {/* Afficher le loader */}
+      <aside
+        className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
         ${
           isExpanded || isMobileOpen
             ? "w-[290px]"
@@ -298,84 +315,84 @@ const AppSidebar: React.FC = () => {
         }
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0`}
-      onMouseEnter={() => !isExpanded && setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <div
-        className={`py-8 flex ${
-          !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
-        }`}
+        onMouseEnter={() => !isExpanded && setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
-        <Link to="/" className="flex gap-2">
-          {isExpanded || isHovered || isMobileOpen ? (
-            <>
-              
+        <div
+          className={`py-8 flex ${
+            !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
+          }`}
+        >
+          <Link to="/" className="flex gap-2">
+            {isExpanded || isHovered || isMobileOpen ? (
+              <>
+                <img
+                  className="dark:hidden"
+                  src="/logo.png"
+                  alt="Logo"
+                  width={40}
+                  height={40}
+                />
+                <img
+                  className="hidden dark:block"
+                  src="/logo.png"
+                  alt="Logo"
+                  width={40}
+                  height={40}
+                />
+                <div className="flex dark:text-white/90 text-xl font-meduim mt-2">Cobalt Invest Ltd</div>
+              </>
+            ) : (
               <img
-                className="dark:hidden"
                 src="/logo.png"
                 alt="Logo"
-                width={40}
-                height={40}
-              />
-              <img
-                className="hidden dark:block"
-                src="/logo.png"
-                alt="Logo"
-                width={40}
-                height={40}
-              />
-              <div className="flex dark:text-white/90 text-xl font-meduim mt-2">Cobalt Invest Ltd</div>
-            </>
-          ) : (
-            <img
-              src="/logo.png"
-              alt="Logo"
                 width={40}
                 height={0}
-            />
-          )}
-        </Link>
-      </div>
-      <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
-        <nav className="mb-6">
-          <div className="flex flex-col gap-4">
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
-                  !isExpanded && !isHovered
-                    ? "lg:justify-center"
-                    : "justify-start"
-                }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "Menu"
-                ) : (
-                  <HorizontaLDots className="size-6" />
-                )}
-              </h2>
-              {renderMenuItems(navItems, "main")}
+              />
+            )}
+          </Link>
+        </div>
+        <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
+          <nav className="mb-6">
+            <div className="flex flex-col gap-4">
+              <div>
+                <h2
+                  className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
+                    !isExpanded && !isHovered
+                      ? "lg:justify-center"
+                      : "justify-start"
+                  }`}
+                >
+                  {isExpanded || isHovered || isMobileOpen ? (
+                    "Menu"
+                  ) : (
+                    <HorizontaLDots className="size-6" />
+                  )}
+                </h2>
+                {renderMenuItems(navItems, "main")}
+              </div>
+              <div className="">
+                <h2
+                  className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
+                    !isExpanded && !isHovered
+                      ? "lg:justify-center"
+                      : "justify-start"
+                  }`}
+                >
+                  {isExpanded || isHovered || isMobileOpen ? (
+                    "Others"
+                  ) : (
+                    <HorizontaLDots />
+                  )}
+                </h2>
+                {renderMenuItems(othersItems, "others")}
+              </div>
             </div>
-            <div className="">
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
-                  !isExpanded && !isHovered
-                    ? "lg:justify-center"
-                    : "justify-start"
-                }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "Others"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(othersItems, "others")}
-            </div>
-          </div>
-        </nav>
-        {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}
-      </div>
-    </aside>
+          </nav>
+          {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}
+        </div>
+      </aside>
+    </>
   );
 };
 

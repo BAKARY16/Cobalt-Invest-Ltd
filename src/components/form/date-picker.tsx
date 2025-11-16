@@ -9,10 +9,13 @@ import DateOption = flatpickr.Options.DateOption;
 type PropsType = {
   id: string;
   mode?: "single" | "multiple" | "range" | "time";
-  onChange?: Hook | Hook[];
+  onChange?: Hook  | Hook[]; //{ (e: React.ChangeEvent<HTMLInputElement>) : void };
   defaultDate?: DateOption;
   label?: string;
   placeholder?: string;
+  value?: string;
+  dateOfBirth?: string | Date,
+  required?: boolean;
 };
 
 export default function DatePicker({
@@ -28,7 +31,7 @@ export default function DatePicker({
       mode: mode || "single",
       static: true,
       monthSelectorType: "static",
-      dateFormat: "Y-m-d",
+      dateFormat: "d-m-Y",
       defaultDate,
       onChange,
     });
